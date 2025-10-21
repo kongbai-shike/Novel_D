@@ -1,15 +1,15 @@
 {
   "dependencies": {
+    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "@vercel/postgres": "^0.9.0"
+    "https": "^1.0.0"
   },
   "name": "novel-downloader",
   "version": "1.0.0",
   "description": "小说搜索下载器 with 用户认证",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node server.js",
     "start": "node server.js"
   },
   "keywords": [
@@ -18,6 +18,5 @@
     "authentication"
   ],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "license": "ISC"
 }

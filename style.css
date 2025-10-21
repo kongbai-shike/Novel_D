@@ -1,0 +1,423 @@
+@import url('themes.css');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+/* 移除所有硬编码的颜色值，因为它们现在在 themes.css 中通过变量控制 */
+/* 只保留布局和尺寸相关的样式 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* 第一部分：顶部标题和按钮 */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+}
+
+.site-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.login-btn {
+    background: white;
+    color: #6a11cb;
+}
+
+.login-btn:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.register-btn {
+    background: #e67e22;
+    color: white;
+}
+
+.register-btn:hover {
+    background: #d35400;
+    transform: translateY(-2px);
+}
+
+/* 第二部分：搜索区 */
+.search-section {
+    padding: 40px 30px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.search-box {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+#search-input {
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+}
+
+#search-btn {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+#search-btn:hover {
+    background: linear-gradient(90deg, #5a0db9, #1c68e8);
+}
+
+/* 第三部分：搜索结果区 */
+.results-section {
+    padding: 30px;
+    position: relative;
+    min-height: 500px;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    border-bottom: 2px solid #6a11cb;
+    padding-bottom: 10px;
+}
+
+.result-item {
+    display: flex;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+    background: #f8f9fa;
+}
+
+.result-item:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.book-info {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+}
+
+/* 更新封面样式以支持图片 */
+.book-cover {
+    width: 100px;
+    height: 140px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #6a11cb, #2575fc); /* 保留背景色作为备用 */
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.book-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.book-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.book-author {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.download-btn-small {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.download-btn-small:hover {
+    background: linear-gradient(90deg, #219653, #27ae60);
+    transform: translateY(-2px);
+}
+
+/* 回到顶部按钮 */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s;
+    font-size: 12px;
+    text-align: center;
+    flex-direction: column;
+}
+
+.back-to-top:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* 模态框样式 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #2c3e50;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.form-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.submit-btn {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    color: white;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(90deg, #219653, #27ae60);
+}
+
+.cancel-btn {
+    background: #95a5a6;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background: #7f8c8d;
+}
+
+.switch-form {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.switch-form a {
+    color: #3498db;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* 加载状态和空状态样式 */
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+/* 登录后的按钮样式 */
+.btn.logged-in {
+    background: #27ae60;
+    color: white;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .site-title {
+        font-size: 2rem;
+    }
+    
+    .search-box {
+        flex-direction: column;
+        border-radius: 10px;
+    }
+    
+    #search-input {
+        border-radius: 10px 10px 0 0;
+    }
+    
+    #search-btn {
+        border-radius: 0 0 10px 10px;
+    }
+    
+    .result-item {
+        flex-direction: column;
+    }
+    
+    .action-buttons {
+        margin-top: 15px;
+        justify-content: center;
+    }
+    
+    .book-info {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* 收藏按钮样式 - 主界面使用 */
+.favorite-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.favorite-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.favorite-btn.favorited {
+    color: #e74c3c;
+}
+
+/* 通用隐藏类 */
+.hidden {
+    display: none;
+}

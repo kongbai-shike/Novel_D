@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小说下载站</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="themes.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 第一部分：标题和按钮区 -->
+        <header class="header-section">
+            <h1 class="site-title">小说下载站</h1>
+            <div class="header-buttons">
+                <button class="btn login-btn" id="login-btn">登录</button>
+                <button class="btn register-btn" id="register-btn">注册</button>
+            </div>
+        </header>
+
+        <!-- 第二部分：搜索区 -->
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="请输入小说名称，例如：斗破苍穹...">
+                <button id="search-btn">搜索</button>
+            </div>
+        </section>
+
+        <!-- 第三部分：搜索结果区 -->
+        <section class="results-section">
+            <h2 class="section-title">搜索记录</h2>
+            <div class="results-container" id="results-container">
+                <!-- 搜索结果将动态添加到这里 -->
+            </div>
+            
+            <!-- 回到顶部按钮 -->
+            <button class="back-to-top" id="back-to-top">
+                <span>回到顶部</span>
+            </button>
+        </section>
+    </div>
+
+    <!-- 登录模态框 -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <h2>用户登录</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">用户名</label>
+                    <input type="text" id="login-username" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密码</label>
+                    <input type="password" id="login-password" placeholder="请输入密码">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="form-btn cancel-btn" id="login-cancel">取消</button>
+                    <button type="submit" class="form-btn submit-btn">登录</button>
+                </div>
+            </form>
+            <div class="switch-form">
+                还没有账号？<a id="switch-to-register">立即注册</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册模态框 -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <h2>用户注册</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">用户名</label>
+                    <input type="text" id="register-username" placeholder="3-15位字母、数字或下划线">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">密码</label>
+                    <input type="password" id="register-password" placeholder="8-16位字符">
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">确认密码</label>
+                    <input type="password" id="register-confirm-password" placeholder="请再次输入密码">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="form-btn cancel-btn" id="register-cancel">取消</button>
+                    <button type="submit" class="form-btn submit-btn">注册</button>
+                </div>
+            </form>
+            <div class="switch-form">
+                已有账号？<a id="switch-to-login">立即登录</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

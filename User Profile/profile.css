@@ -1,0 +1,311 @@
+@import url('../themes.css');
+
+/* 个人界面布局样式 */
+.profile-header {
+    display: flex;
+    align-items: center;
+    padding: 20px 30px;
+    background: var(--header-bg);
+    color: var(--header-text);
+}
+
+.back-to-home {
+    background: var(--button-login-bg);
+    color: var(--button-login-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 20px;
+    transition: all 0.3s;
+}
+
+.back-to-home:hover {
+    background: var(--result-item-hover);
+    transform: translateY(-2px);
+}
+
+.profile-options {
+    display: flex;
+    padding: 20px 30px;
+    background: var(--search-bg);
+    border-bottom: 1px solid var(--input-border);
+    gap: 15px;
+}
+
+.profile-option-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+    background: var(--result-item-bg);
+    color: var(--text-color);
+}
+
+.profile-option-btn.active {
+    background: var(--header-bg);
+    color: var(--header-text);
+}
+
+.profile-option-btn:hover {
+    transform: translateY(-2px);
+}
+
+.profile-content {
+    padding: 30px;
+}
+
+.profile-hidden {
+    display: none;
+}
+
+/* 设置界面样式 */
+.settings-section {
+    max-width: 600px;
+}
+
+.setting-item {
+    background: var(--result-item-bg);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid var(--input-border);
+}
+
+.setting-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--section-title-color);
+}
+
+.setting-description {
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.setting-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* 个人界面头部按钮容器 */
+.profile-header-buttons {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+/* 欢迎文本样式 */
+.welcome-text {
+    color: var(--header-text);
+    margin-right: 15px;
+}
+
+/* 收藏书籍的添加日期样式 */
+.book-added {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-top: 5px;
+    color: var(--text-color);
+}
+
+/* 个人界面专用收藏按钮样式 */
+.profile-favorite-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-favorite-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.profile-favorite-btn.favorited {
+    color: #e74c3c;
+}
+
+/* 主题切换按钮样式 */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background: var(--result-item-bg);
+    border: 1px solid var(--input-border);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    background: var(--result-item-hover);
+}
+
+.theme-icon {
+    font-size: 1.2rem;
+}
+
+/* 关于我们模态框样式 */
+.about-content {
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.about-content p {
+    margin-bottom: 10px;
+}
+
+.about-content strong {
+    color: var(--section-title-color);
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.member-list, .tech-list {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.member-list li, .tech-list li {
+    margin-bottom: 5px;
+    list-style-type: disc;
+}
+
+/* 居中的表单操作按钮 */
+.form-actions-centered {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* 密码强度指示器 */
+.password-strength {
+    margin-top: 5px;
+    height: 4px;
+    border-radius: 2px;
+    background: #eee;
+    overflow: hidden;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0%;
+    transition: all 0.3s;
+}
+
+.strength-weak {
+    background: #e74c3c;
+    width: 33%;
+}
+
+.strength-medium {
+    background: #f39c12;
+    width: 66%;
+}
+
+.strength-strong {
+    background: #27ae60;
+    width: 100%;
+}
+
+/* 密码要求提示 */
+.password-requirements {
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #7f8c8d;
+}
+
+.requirement {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.requirement.valid {
+    color: #27ae60;
+}
+
+.requirement.invalid {
+    color: #e74c3c;
+}
+
+.requirement-icon {
+    margin-right: 5px;
+    font-size: 0.7rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .back-to-home {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .profile-header-buttons {
+        margin-left: 0;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .profile-options {
+        flex-direction: column;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .setting-actions {
+        flex-direction: column;
+    }
+}

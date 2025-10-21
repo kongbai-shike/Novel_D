@@ -1,0 +1,139 @@
+/* 主题系统变量 */
+:root {
+  /* 白天主题（默认） */
+  --bg-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  --container-bg: white;
+  --text-color: #333;
+  --header-bg: linear-gradient(90deg, #6a11cb, #2575fc);
+  --header-text: white;
+  --search-bg: #f8f9fa;
+  --result-item-bg: #f8f9fa;
+  --result-item-hover: #e9ecef;
+  --section-title-color: #2c3e50;
+  --button-login-bg: white;
+  --button-login-color: #6a11cb;
+  --button-register-bg: #e67e22;
+  --button-register-color: white;
+  --button-download-bg: linear-gradient(90deg, #27ae60, #2ecc71);
+  --button-download-hover: linear-gradient(90deg, #219653, #27ae60);
+  --modal-bg: white;
+  --modal-text: #333;
+  --input-bg: white;
+  --input-border: #ddd;
+  --back-to-top-bg: linear-gradient(90deg, #6a11cb, #2575fc);
+  --back-to-top-color: white;
+}
+
+[data-theme="dark"] {
+  /* 黑夜主题 */
+  --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+  --container-bg: #1a1a1a;
+  --text-color: #e0e0e0;
+  --header-bg: linear-gradient(90deg, #0f2027, #203a43);
+  --header-text: #e0e0e0;
+  --search-bg: #2d2d2d;
+  --result-item-bg: #2d2d2d;
+  --result-item-hover: #3d3d3d;
+  --section-title-color: #e0e0e0;
+  --button-login-bg: #2d2d2d;
+  --button-login-color: #e0e0e0;
+  --button-register-bg: #e67e22;
+  --button-register-color: white;
+  --button-download-bg: linear-gradient(90deg, #27ae60, #2ecc71);
+  --button-download-hover: linear-gradient(90deg, #219653, #27ae60);
+  --modal-bg: #2d2d2d;
+  --modal-text: #e0e0e0;
+  --input-bg: #3d3d3d;
+  --input-border: #555;
+  --back-to-top-bg: linear-gradient(90deg, #0f2027, #203a43);
+  --back-to-top-color: #e0e0e0;
+}
+
+/* 应用主题变量到现有样式 */
+body {
+  background: var(--bg-gradient);
+  color: var(--text-color);
+}
+
+.container {
+  background: var(--container-bg);
+}
+
+.header-section {
+  background: var(--header-bg);
+  color: var(--header-text);
+}
+
+.search-section {
+  background: var(--search-bg);
+}
+
+.result-item {
+  background: var(--result-item-bg);
+}
+
+.result-item:hover {
+  background: var(--result-item-hover);
+}
+
+.section-title {
+  color: var(--section-title-color);
+}
+
+.btn.login-btn {
+  background: var(--button-login-bg);
+  color: var(--button-login-color);
+}
+
+.btn.register-btn {
+  background: var(--button-register-bg);
+  color: var(--button-register-color);
+}
+
+.download-btn-small {
+  background: var(--button-download-bg);
+  color: white;
+}
+
+.download-btn-small:hover {
+  background: var(--button-download-hover);
+}
+
+.modal-content {
+  background: var(--modal-bg);
+  color: var(--modal-text);
+}
+
+.form-group input {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-color);
+}
+
+.back-to-top {
+  background: var(--back-to-top-bg);
+  color: var(--back-to-top-color);
+}
+
+/* 个人界面的主题适配 */
+.profile-header {
+  background: var(--header-bg);
+  color: var(--header-text);
+}
+
+.profile-options {
+  background: var(--search-bg);
+}
+
+.setting-item {
+  background: var(--result-item-bg);
+  border-color: var(--input-border);
+}
+
+.setting-title {
+  color: var(--section-title-color);
+}
+
+.stat-card {
+  background: var(--header-bg);
+}

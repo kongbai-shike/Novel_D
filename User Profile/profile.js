@@ -191,55 +191,73 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 加载收藏列表
-    async function loadFavorites() {
-        try {
-            const response = await fetch(`/api/favorites/${currentUser.user_id}`);
-            const data = await response.json();
-            
-            if (data.success) {
-                displayFavorites(data.favorites);
-            } else {
-                favoritesContainer.innerHTML = '<p class="no-results">加载收藏失败</p>';
-            }
-        } catch (error) {
-            console.error('加载收藏错误:', error);
-            favoritesContainer.innerHTML = '<p class="no-results">加载收藏失败</p>';
+    function loadFavorites() {
+        const favorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
+        displayFavorites(favorites);
+    }
+
+    // 显示收藏列表
+    function displayFavorites(favorites) {
+        favoritesContainer.innerHTML = '';
+        
+        if (favorites.length === 0) {
+            favoritesContainer.innerHTML = '<p class="no-results">暂无收藏的小说</p>';
+            return;
         }
+        
+        favorites.forEach((book, index) => {
+            const favoriteItem = document.createElement('div');
+            favoriteItem.className = 'result-item';
+            
+            favoriteItem.innerHTML = `
+                <div class="book-info">
+                    <div class="book-cover">
+                        <img src="${book.cover || getDefaultCover(book.title)}" alt="${book.title}" onerror="this.src='${getDefaultCover(book.title)}'">
+                    </div>
+                    <div class="book-details">
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">作者: ${book.author || '未知作者'}</div>
+                        <div class="book-added">
+                            收藏于: ${new Date(book.addedAt).toLocaleDateString()}
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="favorite-btn favorited" data-index="${index}">❤️</button>
+                    <button class="download-btn-small" data-title="${book.title}">下载</button>
+                </div>
+            `;
+            
+            favoritesContainer.appendChild(favoriteItem);
+        });
+        
+        // 为收藏列表中的下载按钮添加事件
+        document.querySelectorAll('#favorites-container .download-btn-small').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const title = this.getAttribute('data-title');
+                downloadNovel({ title: title });
+            });
+        });
+        
+        // 为收藏列表中的收藏按钮添加事件（取消收藏）
+        document.querySelectorAll('#favorites-container .favorite-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = this.getAttribute('data-index');
+                removeFavorite(index);
+            });
+        });
     }
 
     // 取消收藏
-    async function removeFavorite(index) {
-        try {
-            const favorites = await getFavorites();
-            const removedBook = favorites[index];
-            
-            const response = await fetch('/api/favorites', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_id: currentUser.user_id,
-                    novel_title: removedBook.novel_title
-                })
-            });
-            
-            const data = await response.json();
-            if (data.success) {
-                loadFavorites();
-                alert(`已取消收藏《${removedBook.novel_title}》`);
-            }
-        } catch (error) {
-            console.error('取消收藏错误:', error);
-            alert('取消收藏失败');
-        }
-    }
-
-    // 获取收藏列表
-    async function getFavorites() {
-        const response = await fetch(`/api/favorites/${currentUser.user_id}`);
-        const data = await response.json();
-        return data.success ? data.favorites : [];
+    function removeFavorite(index) {
+        let favorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
+        const removedBook = favorites[index];
+        favorites.splice(index, 1);
+        localStorage.setItem('userFavorites', JSON.stringify(favorites));
+        
+        // 重新加载收藏列表
+        loadFavorites();
+        alert(`已取消收藏《${removedBook.title}》`);
     }
 
     // 加载设置界面

@@ -22,9 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const changePasswordModal = document.getElementById('change-password-modal');
     const changePasswordForm = document.getElementById('change-password-form');
     const changePasswordCancel = document.getElementById('change-password-cancel');
-    const oldPasswordInput = document.getElementById('old-password');
-    const newPasswordInput = document.getElementById('new-password');
-    const confirmNewPasswordInput = document.getElementById('confirm-new-password');
     
     // 关于我们相关元素
     const aboutBtn = document.getElementById('about-btn');
@@ -35,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (!currentUser) {
         alert('请先登录！');
-        window.location.href = '../index.html';
+        window.location.href = '/';
         return;
     }
 
@@ -47,14 +44,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 回到主页
     backToHomeBtn.addEventListener('click', function() {
-        window.location.href = '../index.html';
+        window.location.href = '/';
     });
 
     // 退出登录
     logoutBtn.addEventListener('click', function() {
         localStorage.removeItem('currentUser');
         alert('已退出登录');
-        window.location.href = '../index.html';
+        window.location.href = '/';
     });
 
     // 切换选项
@@ -72,52 +69,31 @@ document.addEventListener('DOMContentLoaded', function() {
     themeToggle.addEventListener('click', toggleTheme);
 
     // 修改密码按钮点击事件
-    if (changePasswordBtn) {
-        changePasswordBtn.addEventListener('click', function() {
-            changePasswordModal.style.display = 'flex';
-            // 清空表单
-            changePasswordForm.reset();
-        });
-    }
+    changePasswordBtn.addEventListener('click', function() {
+        changePasswordModal.style.display = 'flex';
+        changePasswordForm.reset();
+    });
 
     // 修改密码取消按钮
-    if (changePasswordCancel) {
-        changePasswordCancel.addEventListener('click', function() {
-            changePasswordModal.style.display = 'none';
-        });
-    }
+    changePasswordCancel.addEventListener('click', function() {
+        changePasswordModal.style.display = 'none';
+    });
 
     // 修改密码表单提交
-    if (changePasswordForm) {
-        changePasswordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            changePassword();
-        });
-    }
+    changePasswordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        changePassword();
+    });
 
     // 关于我们按钮点击事件
-    if (aboutBtn) {
-        aboutBtn.addEventListener('click', function() {
-            aboutModal.style.display = 'flex';
-        });
-    }
+    aboutBtn.addEventListener('click', function() {
+        aboutModal.style.display = 'flex';
+    });
 
     // 关于我们关闭按钮
-    if (aboutCloseBtn) {
-        aboutCloseBtn.addEventListener('click', function() {
-            aboutModal.style.display = 'none';
-        });
-    }
-
-    // 新密码输入时实时验证
-    if (newPasswordInput) {
-        newPasswordInput.addEventListener('input', validatePassword);
-    }
-
-    // 确认新密码输入时实时验证
-    if (confirmNewPasswordInput) {
-        confirmNewPasswordInput.addEventListener('input', validatePasswordMatch);
-    }
+    aboutCloseBtn.addEventListener('click', function() {
+        aboutModal.style.display = 'none';
+    });
 
     // 点击模态框外部关闭
     window.addEventListener('click', function(e) {
@@ -131,11 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 设置活动标签页
     function setActiveTab(tab) {
-        // 更新按钮状态
         favoritesBtn.classList.toggle('active', tab === 'favorites');
         settingsBtn.classList.toggle('active', tab === 'settings');
-        
-        // 更新内容显示
         favoritesSection.classList.toggle('profile-hidden', tab !== 'favorites');
         settingsSection.classList.toggle('profile-hidden', tab !== 'settings');
     }
@@ -170,11 +143,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 修改密码函数
     function changePassword() {
-        const oldPassword = oldPasswordInput.value;
-        const newPassword = newPasswordInput.value;
-        const confirmNewPassword = confirmNewPasswordInput.value;
+        const oldPassword = document.getElementById('old-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmNewPassword = document.getElementById('confirm-new-password').value;
 
-        // 基础验证
         if (!oldPassword || !newPassword || !confirmNewPassword) {
             alert('请填写所有密码字段');
             return;
@@ -185,8 +157,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (oldPassword === newPassword) {
-            alert('新密码不能与旧密码相同');
+        if (newPassword.length < 6) {
+            alert('新密码长度至少6位');
             return;
         }
 
@@ -218,24 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 密码强度验证
-    function validatePassword() {
-        const password = newPasswordInput.value;
-        // 这里可以添加更复杂的密码强度验证逻辑
-    }
-
-    // 密码匹配验证
-    function validatePasswordMatch() {
-        const newPassword = newPasswordInput.value;
-        const confirmPassword = confirmNewPasswordInput.value;
-        
-        if (confirmPassword && newPassword !== confirmPassword) {
-            confirmNewPasswordInput.style.borderColor = '#e74c3c';
-        } else {
-            confirmNewPasswordInput.style.borderColor = '';
-        }
-    }
-
     // 加载收藏列表
     function loadFavorites() {
         const favorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
@@ -258,18 +212,18 @@ document.addEventListener('DOMContentLoaded', function() {
             favoriteItem.innerHTML = `
                 <div class="book-info">
                     <div class="book-cover">
-                        <img src="${book.cover}" alt="${book.title}" onerror="this.src='${getDefaultCover(book.title)}'">
+                        <img src="${book.cover || getDefaultCover(book.title)}" alt="${book.title}" onerror="this.src='${getDefaultCover(book.title)}'">
                     </div>
                     <div class="book-details">
                         <div class="book-title">${book.title}</div>
-                        <div class="book-author">作者: ${book.author}</div>
+                        <div class="book-author">作者: ${book.author || '未知作者'}</div>
                         <div class="book-added">
                             收藏于: ${new Date(book.addedAt).toLocaleDateString()}
                         </div>
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <button class="profile-favorite-btn favorited" data-index="${index}">❤️</button>
+                    <button class="favorite-btn favorited" data-index="${index}">❤️</button>
                     <button class="download-btn-small" data-title="${book.title}">下载</button>
                 </div>
             `;
@@ -286,57 +240,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // 为收藏列表中的收藏按钮添加事件（取消收藏）
-        document.querySelectorAll('#favorites-container .profile-favorite-btn').forEach(btn => {
+        document.querySelectorAll('#favorites-container .favorite-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const index = this.getAttribute('data-index');
-                removeFavorite(index, this);
+                removeFavorite(index);
             });
         });
     }
 
     // 取消收藏
-    function removeFavorite(index, button) {
+    function removeFavorite(index) {
         let favorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
+        const removedBook = favorites[index];
         favorites.splice(index, 1);
         localStorage.setItem('userFavorites', JSON.stringify(favorites));
         
         // 重新加载收藏列表
         loadFavorites();
+        alert(`已取消收藏《${removedBook.title}》`);
     }
 
     // 加载设置界面
     function loadSettings() {
         const favorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
         const downloadCount = parseInt(localStorage.getItem('userDownloadCount') || '0');
-        const joinDate = localStorage.getItem('userJoinDate') || new Date().toISOString();
         
         // 更新统计数据
         favoritesCount.textContent = favorites.length;
         downloadsCount.textContent = downloadCount;
         
         // 计算会员天数
+        const joinDate = localStorage.getItem('userJoinDate') || new Date().toISOString();
         const joinDay = new Date(joinDate);
         const today = new Date();
         const days = Math.floor((today - joinDay) / (1000 * 60 * 60 * 24)) + 1;
         memberDays.textContent = days;
-        
-        // 添加设置按钮事件
-        setupSettingButtons();
-    }
-
-    // 设置按钮事件
-    function setupSettingButtons() {
-        document.getElementById('view-profile-btn').addEventListener('click', function() {
-            alert('个人信息功能开发中...');
-        });
-        
-        document.getElementById('download-settings-btn').addEventListener('click', function() {
-            alert('下载设置功能开发中...');
-        });
-        
-        document.getElementById('privacy-settings-btn').addEventListener('click', function() {
-            alert('隐私设置功能开发中...');
-        });
     }
 
     // 下载小说
@@ -363,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alert(`正在下载《${book.title}》，请稍候...`);
     }
 
-    // 获取默认封面（与主界面相同）
+    // 获取默认封面
     function getDefaultCover(title) {
         const colors = ['#6a11cb', '#2575fc', '#27ae60', '#e67e22', '#e74c3c'];
         const color = colors[Math.floor(Math.random() * colors.length)];

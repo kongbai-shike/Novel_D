@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loginBtn.textContent = currentUser.username;
             loginBtn.onclick = function() {
                 // 跳转到个人界面
-                window.location.href = 'User Profile/profile.html';
+                window.location.href = '/profile';
             };
             registerBtn.textContent = '退出';
             registerBtn.onclick = logoutUser;
@@ -227,15 +227,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // 显示加载状态
         showLoading();
         
+        console.log('开始搜索:', query);
+        
         // 调用后端搜索API
         fetch(`/api/search?q=${encodeURIComponent(query)}`)
             .then(response => {
+                console.log('收到响应:', response.status);
                 if (!response.ok) {
-                    throw new Error('网络请求失败');
+                    throw new Error('网络请求失败: ' + response.status);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('搜索数据:', data);
                 hideLoading();
                 
                 if (data.status === 'success' && data.count > 0) {
@@ -244,12 +248,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     saveSearchHistory(query, currentSearchResults);
                 } else {
                     alert('未找到相关小说，请尝试其他关键词');
+                    resultsContainer.innerHTML = '<p class="no-results">未找到相关小说</p>';
                 }
             })
             .catch(error => {
                 hideLoading();
                 console.error('搜索错误:', error);
-                alert('搜索失败: ' + error.message + '。请确保服务器正在运行。');
+                alert('搜索失败: ' + error.message);
+                resultsContainer.innerHTML = '<p class="no-results">搜索失败，请稍后重试</p>';
             });
     }
 
@@ -267,9 +273,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 显示搜索结果
     function displayResults(results) {
+        console.log('显示结果:', results);
         resultsContainer.innerHTML = '';
         
-        if (results.length === 0) {
+        if (!results || results.length === 0) {
             resultsContainer.innerHTML = '<p class="no-results">未找到相关小说</p>';
             return;
         }
@@ -292,6 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="book-details">
                         <div class="book-title">${item.title || '未知书名'}</div>
                         <div class="book-author">作者: ${item.author || '未知作者'}</div>
+                        ${item.source ? `<div class="book-source">来源: ${item.source}</div>` : ''}
                     </div>
                 </div>
                 <div class="action-buttons">
@@ -324,8 +332,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 获取默认封面（当API没有返回封面时使用）
     function getDefaultCover(title) {
-        // 这里可以返回一个默认封面图片的URL
-        // 或者根据书名生成一个带文字的封面
         const colors = ['#6a11cb', '#2575fc', '#27ae60', '#e67e22', '#e74c3c'];
         const color = colors[Math.floor(Math.random() * colors.length)];
         return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="140" viewBox="0 0 100 140"><rect width="100" height="140" fill="${color}"/><text x="50" y="70" font-family="Arial" font-size="14" fill="white" text-anchor="middle">${title ? title.substring(0, 2) : '小说'}</text></svg>`;

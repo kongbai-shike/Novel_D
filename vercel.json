@@ -20,11 +20,8 @@
       "dest": "/server.js"
     },
     {
-      "src": "/",
+      "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }

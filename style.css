@@ -7,19 +7,9 @@
     font-family: 'Microsoft YaHei', sans-serif;
 }
 
-/* 移除所有硬编码的颜色值，因为它们现在在 themes.css 中通过变量控制 */
-/* 只保留布局和尺寸相关的样式 */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Microsoft YaHei', sans-serif;
-}
-
 body {
-    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-    color: #333;
+    background: var(--bg-gradient);
+    color: var(--text-color);
     line-height: 1.6;
     min-height: 100vh;
     padding: 20px;
@@ -28,7 +18,7 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    background: white;
+    background: var(--container-bg);
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     overflow: hidden;
@@ -40,8 +30,8 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px 30px;
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
-    color: white;
+    background: var(--header-bg);
+    color: var(--header-text);
 }
 
 .site-title {
@@ -66,18 +56,18 @@ body {
 }
 
 .login-btn {
-    background: white;
-    color: #6a11cb;
+    background: var(--button-login-bg);
+    color: var(--button-login-color);
 }
 
 .login-btn:hover {
-    background: #f0f0f0;
+    background: var(--result-item-hover);
     transform: translateY(-2px);
 }
 
 .register-btn {
-    background: #e67e22;
-    color: white;
+    background: var(--button-register-bg);
+    color: var(--button-register-color);
 }
 
 .register-btn:hover {
@@ -88,8 +78,8 @@ body {
 /* 第二部分：搜索区 */
 .search-section {
     padding: 40px 30px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #eee;
+    background: var(--search-bg);
+    border-bottom: 1px solid var(--input-border);
 }
 
 .search-box {
@@ -107,6 +97,8 @@ body {
     border: none;
     font-size: 16px;
     outline: none;
+    background: var(--input-bg);
+    color: var(--text-color);
 }
 
 #search-btn {
@@ -124,6 +116,11 @@ body {
     background: linear-gradient(90deg, #5a0db9, #1c68e8);
 }
 
+#search-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
 /* 第三部分：搜索结果区 */
 .results-section {
     padding: 30px;
@@ -134,24 +131,25 @@ body {
 .section-title {
     font-size: 1.8rem;
     margin-bottom: 20px;
-    color: #2c3e50;
+    color: var(--section-title-color);
     border-bottom: 2px solid #6a11cb;
     padding-bottom: 10px;
 }
 
 .result-item {
     display: flex;
-    border: 1px solid #eee;
+    border: 1px solid var(--input-border);
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 20px;
     transition: all 0.3s;
-    background: #f8f9fa;
+    background: var(--result-item-bg);
 }
 
 .result-item:hover {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transform: translateY(-5px);
+    background: var(--result-item-hover);
 }
 
 .book-info {
@@ -160,14 +158,13 @@ body {
     gap: 20px;
 }
 
-/* 更新封面样式以支持图片 */
 .book-cover {
     width: 100px;
     height: 140px;
     border-radius: 8px;
     overflow: hidden;
     flex-shrink: 0;
-    background: linear-gradient(135deg, #6a11cb, #2575fc); /* 保留背景色作为备用 */
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
 }
 
 .book-cover img {
@@ -186,13 +183,20 @@ body {
 .book-title {
     font-size: 1.4rem;
     font-weight: bold;
-    color: #2c3e50;
+    color: var(--section-title-color);
     margin-bottom: 8px;
 }
 
 .book-author {
     color: #7f8c8d;
     font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.book-source {
+    color: #95a5a6;
+    font-size: 0.9rem;
+    font-style: italic;
 }
 
 .action-buttons {
@@ -202,7 +206,7 @@ body {
 }
 
 .download-btn-small {
-    background: linear-gradient(90deg, #27ae60, #2ecc71);
+    background: var(--button-download-bg);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -214,7 +218,7 @@ body {
 }
 
 .download-btn-small:hover {
-    background: linear-gradient(90deg, #219653, #27ae60);
+    background: var(--button-download-hover);
     transform: translateY(-2px);
 }
 
@@ -223,8 +227,8 @@ body {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background: linear-gradient(90deg, #6a11cb, #2575fc);
-    color: white;
+    background: var(--back-to-top-bg);
+    color: var(--back-to-top-color);
     border: none;
     border-radius: 50%;
     width: 60px;
@@ -260,7 +264,8 @@ body {
 }
 
 .modal-content {
-    background: white;
+    background: var(--modal-bg);
+    color: var(--modal-text);
     padding: 30px;
     border-radius: 10px;
     width: 90%;
@@ -271,7 +276,7 @@ body {
 .modal h2 {
     margin-bottom: 20px;
     text-align: center;
-    color: #2c3e50;
+    color: var(--section-title-color);
 }
 
 .form-group {
@@ -282,15 +287,17 @@ body {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #555;
+    color: var(--text-color);
 }
 
 .form-group input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--input-border);
     border-radius: 5px;
     font-size: 16px;
+    background: var(--input-bg);
+    color: var(--text-color);
 }
 
 .form-actions {
@@ -346,10 +353,29 @@ body {
     font-size: 1.1rem;
 }
 
-/* 登录后的按钮样式 */
-.btn.logged-in {
-    background: #27ae60;
-    color: white;
+/* 收藏按钮样式 */
+.favorite-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.favorite-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.favorite-btn.favorited {
+    color: #e74c3c;
 }
 
 /* 响应式设计 */
@@ -390,34 +416,4 @@ body {
         justify-content: center;
         text-align: center;
     }
-}
-
-/* 收藏按钮样式 - 主界面使用 */
-.favorite-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: all 0.3s;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.favorite-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-    transform: scale(1.1);
-}
-
-.favorite-btn.favorited {
-    color: #e74c3c;
-}
-
-/* 通用隐藏类 */
-.hidden {
-    display: none;
 }

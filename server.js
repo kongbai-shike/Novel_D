@@ -1,76 +1,56 @@
 const express = require('express');
 const cors = require('cors');
-const https = require('https');
+const { MongoClient, ObjectId } = require('mongodb');
+const bcrypt = require('bcryptjs');
 const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// MongoDB连接
+let db;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/novel_downloader';
+
+async function connectDB() {
+    try {
+        const client = new MongoClient(MONGODB_URI);
+        await client.connect();
+        db = client.db();
+        console.log('✅ 已连接到MongoDB');
+        
+        // 创建索引
+        await db.collection('users').createIndex({ username: 1 }, { unique: true });
+        await db.collection('user_favorites').createIndex({ user_id: 1, novel_title: 1 }, { unique: true });
+        
+    } catch (error) {
+        console.error('❌ MongoDB连接失败:', error);
+        process.exit(1);
+    }
+}
 
 // 中间件
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// API配置
-const API_KEY = 'a14b5cdff147b1262882db2ca29355bd';
-const BASE_URL = 'https://api.xcvts.cn/api/xiaoshuo/axdzs';
-
 // 静态文件服务
 app.use(express.static(__dirname));
 app.use('/User%20Profile', express.static(path.join(__dirname, 'User Profile')));
 
-console.log('✅ 服务器配置完成');
-
-// 内存数据库
-const users = new Map();
-let nextId = 3;
-
-// 初始化示例用户
-users.set(1, { 
-    id: 1, 
-    username: 'admin', 
-    password: 'admin123', 
-    email: 'admin@example.com', 
-    download_count: 0,
-    created_at: new Date(),
-    last_login: new Date()
-});
-users.set(2, { 
-    id: 2, 
-    username: 'test', 
-    password: 'test123', 
-    email: 'test@example.com', 
-    download_count: 0,
-    created_at: new Date(),
-    last_login: new Date()
-});
-
-// 页面路由
-app.get('/', (req, res) => {
-    console.log('📄 访问主页');
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/profile', (req, res) => {
-    console.log('👤 访问个人资料页');
-    res.sendFile(path.join(__dirname, 'User Profile', 'profile.html'));
-});
-
-app.get('/User%20Profile/profile.html', (req, res) => {
-    console.log('👤 访问个人资料页 (旧路径)');
-    res.sendFile(path.join(__dirname, 'User Profile', 'profile.html'));
-});
+// API配置
+const API_KEY = 'a14b5cdff147b1262882db2ca29355bd';
+const BASE_URL = 'https://api.xcvts.cn/api/xiaoshuo/axdzs';
 
 // HTTPS请求函数
 function makeRequest(url) {
     return new Promise((resolve, reject) => {
+        const https = require('https');
         https.get(url, (response) => {
             let data = '';
-            
             response.on('data', (chunk) => {
                 data += chunk;
             });
-            
             response.on('end', () => {
                 try {
                     const parsedData = JSON.parse(data);
@@ -79,12 +59,20 @@ function makeRequest(url) {
                     reject(new Error('解析JSON失败: ' + error.message));
                 }
             });
-            
         }).on('error', (error) => {
             reject(new Error('请求失败: ' + error.message));
         });
     });
 }
+
+// 页面路由
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/profile', (req, res) => {
+    res.sendFile(path.join(__dirname, 'User Profile', 'profile.html'));
+});
 
 // API路由
 
@@ -94,11 +82,11 @@ app.get('/api/health', (req, res) => {
         status: 'ok', 
         message: '服务器运行正常',
         timestamp: new Date().toISOString(),
-        version: '1.0.0'
+        database: db ? '已连接' : '未连接'
     });
 });
 
-// 搜索API - 修复版本
+// 搜索API
 app.get('/api/search', async (req, res) => {
     try {
         const query = req.query.q;
@@ -111,21 +99,18 @@ app.get('/api/search', async (req, res) => {
             });
         }
         
-        // 构建API请求URL
         const apiUrl = `${BASE_URL}?apiKey=${API_KEY}&q=${encodeURIComponent(query)}`;
         console.log('调用外部API:', apiUrl);
         
-        // 调用真实API
         const apiData = await makeRequest(apiUrl);
         console.log('API返回数据:', apiData);
         
-        // 返回API数据
         res.json(apiData);
         
     } catch (error) {
         console.error('搜索API错误:', error);
         
-        // 降级方案：返回模拟数据
+        // 降级方案
         const mockResults = {
             status: 'success',
             count: 3,
@@ -155,57 +140,8 @@ app.get('/api/search', async (req, res) => {
     }
 });
 
-// 登录API
-app.post('/api/login', (req, res) => {
-    try {
-        const { username, password } = req.body;
-        console.log('🔐 登录请求:', username);
-        
-        if (!username || !password) {
-            return res.json({
-                success: false,
-                message: '请输入用户名和密码'
-            });
-        }
-        
-        // 查找用户
-        const user = Array.from(users.values()).find(u => u.username === username);
-        
-        if (!user) {
-            return res.json({
-                success: false,
-                message: '用户不存在'
-            });
-        }
-        
-        if (password !== user.password) {
-            return res.json({
-                success: false,
-                message: '密码错误'
-            });
-        }
-        
-        // 更新最后登录时间
-        user.last_login = new Date();
-        
-        res.json({
-            success: true,
-            message: '登录成功',
-            username: user.username,
-            user_id: user.id
-        });
-        
-    } catch (error) {
-        console.error('登录错误:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: '登录失败' 
-        });
-    }
-});
-
-// 注册API
-app.post('/api/register', (req, res) => {
+// 用户注册
+app.post('/api/register', async (req, res) => {
     try {
         const { username, password, confirmPassword } = req.body;
         console.log('📝 注册请求:', username);
@@ -224,8 +160,22 @@ app.post('/api/register', (req, res) => {
             });
         }
         
+        if (username.length < 3 || username.length > 15) {
+            return res.json({
+                success: false,
+                message: '用户名长度应为3-15位'
+            });
+        }
+        
+        if (password.length < 6) {
+            return res.json({
+                success: false,
+                message: '密码长度至少6位'
+            });
+        }
+        
         // 检查用户名是否已存在
-        const existingUser = Array.from(users.values()).find(u => u.username === username);
+        const existingUser = await db.collection('users').findOne({ username });
         if (existingUser) {
             return res.json({
                 success: false,
@@ -233,24 +183,27 @@ app.post('/api/register', (req, res) => {
             });
         }
         
+        // 加密密码
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
         // 创建新用户
         const newUser = {
-            id: nextId++,
             username,
-            password,
+            password: hashedPassword,
             email: '',
             download_count: 0,
             created_at: new Date(),
-            last_login: new Date()
+            last_login: new Date(),
+            join_date: new Date()
         };
         
-        users.set(newUser.id, newUser);
+        const result = await db.collection('users').insertOne(newUser);
         
         res.json({
             success: true,
             message: '注册成功',
             username: username,
-            user_id: newUser.id
+            user_id: result.insertedId.toString()
         });
         
     } catch (error) {
@@ -262,8 +215,200 @@ app.post('/api/register', (req, res) => {
     }
 });
 
+// 用户登录
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        console.log('🔐 登录请求:', username);
+        
+        if (!username || !password) {
+            return res.json({
+                success: false,
+                message: '请输入用户名和密码'
+            });
+        }
+        
+        // 查找用户
+        const user = await db.collection('users').findOne({ username });
+        
+        if (!user) {
+            return res.json({
+                success: false,
+                message: '用户不存在'
+            });
+        }
+        
+        // 验证密码
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.json({
+                success: false,
+                message: '密码错误'
+            });
+        }
+        
+        // 更新最后登录时间
+        await db.collection('users').updateOne(
+            { _id: user._id },
+            { $set: { last_login: new Date() } }
+        );
+        
+        res.json({
+            success: true,
+            message: '登录成功',
+            username: user.username,
+            user_id: user._id.toString()
+        });
+        
+    } catch (error) {
+        console.error('登录错误:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: '登录失败' 
+        });
+    }
+});
+
+// 获取用户收藏
+app.get('/api/favorites/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        
+        const favorites = await db.collection('user_favorites')
+            .find({ user_id: userId })
+            .sort({ added_at: -1 })
+            .toArray();
+        
+        res.json({
+            success: true,
+            favorites: favorites
+        });
+        
+    } catch (error) {
+        console.error('获取收藏错误:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: '获取收藏失败' 
+        });
+    }
+});
+
+// 添加收藏
+app.post('/api/favorites', async (req, res) => {
+    try {
+        const { user_id, novel_title, novel_author, novel_cover } = req.body;
+        
+        const favorite = {
+            user_id,
+            novel_title,
+            novel_author: novel_author || '未知作者',
+            novel_cover: novel_cover || '',
+            added_at: new Date()
+        };
+        
+        // 使用upsert避免重复
+        const result = await db.collection('user_favorites').updateOne(
+            { user_id, novel_title },
+            { $set: favorite },
+            { upsert: true }
+        );
+        
+        res.json({
+            success: true,
+            message: '收藏成功'
+        });
+        
+    } catch (error) {
+        console.error('添加收藏错误:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: '收藏失败' 
+        });
+    }
+});
+
+// 取消收藏
+app.delete('/api/favorites', async (req, res) => {
+    try {
+        const { user_id, novel_title } = req.body;
+        
+        await db.collection('user_favorites').deleteOne({
+            user_id,
+            novel_title
+        });
+        
+        res.json({
+            success: true,
+            message: '取消收藏成功'
+        });
+        
+    } catch (error) {
+        console.error('取消收藏错误:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: '取消收藏失败' 
+        });
+    }
+});
+
+// 修改密码
+app.post('/api/change-password', async (req, res) => {
+    try {
+        const { userId, oldPassword, newPassword } = req.body;
+        console.log('🔑 修改密码请求:', userId);
+
+        if (!userId || !oldPassword || !newPassword) {
+            return res.json({ 
+                success: false, 
+                message: '请提供完整的参数' 
+            });
+        }
+
+        const user = await db.collection('users').findOne({ 
+            _id: new ObjectId(userId) 
+        });
+        
+        if (!user) {
+            return res.json({ 
+                success: false, 
+                message: '用户不存在' 
+            });
+        }
+
+        // 验证旧密码
+        const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+        if (!isOldPasswordValid) {
+            return res.json({ 
+                success: false, 
+                message: '旧密码错误' 
+            });
+        }
+
+        // 加密新密码
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // 更新密码
+        await db.collection('users').updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { password: hashedNewPassword } }
+        );
+        
+        res.json({
+            success: true,
+            message: '密码修改成功'
+        });
+
+    } catch (error) {
+        console.error('修改密码错误:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: '修改密码失败' 
+        });
+    }
+});
+
 // 下载API
-app.get('/api/download', (req, res) => {
+app.get('/api/download', async (req, res) => {
     try {
         const { q, n, token } = req.query;
         console.log('📥 下载请求:', q);
@@ -284,7 +429,9 @@ app.get('/api/download', (req, res) => {
         }
         
         // 用户验证
-        const user = users.get(parseInt(token));
+        const user = await db.collection('users').findOne({ 
+            _id: new ObjectId(token) 
+        });
         if (!user) {
             return res.json({ 
                 success: false, 
@@ -293,7 +440,10 @@ app.get('/api/download', (req, res) => {
         }
         
         // 更新下载计数
-        user.download_count = (user.download_count || 0) + 1;
+        await db.collection('users').updateOne(
+            { _id: new ObjectId(token) },
+            { $inc: { download_count: 1 } }
+        );
         
         // 构建下载URL
         const downloadUrl = `${BASE_URL}?apiKey=${API_KEY}&q=${encodeURIComponent(q)}&n=${n}`;
@@ -311,20 +461,14 @@ app.get('/api/download', (req, res) => {
     }
 });
 
-// 修改密码API
-app.post('/api/change-password', (req, res) => {
+// 获取用户统计信息
+app.get('/api/user/stats/:userId', async (req, res) => {
     try {
-        const { userId, oldPassword, newPassword } = req.body;
-        console.log('🔑 修改密码请求:', userId);
-
-        if (!userId || !oldPassword || !newPassword) {
-            return res.json({ 
-                success: false, 
-                message: '请提供完整的参数' 
-            });
-        }
-
-        const user = users.get(parseInt(userId));
+        const userId = req.params.userId;
+        
+        const user = await db.collection('users').findOne({ 
+            _id: new ObjectId(userId) 
+        });
         
         if (!user) {
             return res.json({ 
@@ -332,38 +476,32 @@ app.post('/api/change-password', (req, res) => {
                 message: '用户不存在' 
             });
         }
-
-        // 验证旧密码
-        if (oldPassword !== user.password) {
-            return res.json({ 
-                success: false, 
-                message: '旧密码错误' 
-            });
-        }
-
-        // 更新密码
-        user.password = newPassword;
+        
+        // 获取收藏数量
+        const favoritesCount = await db.collection('user_favorites')
+            .countDocuments({ user_id: userId });
+        
+        // 计算会员天数
+        const joinDate = user.join_date || user.created_at;
+        const today = new Date();
+        const memberDays = Math.floor((today - joinDate) / (1000 * 60 * 60 * 24)) + 1;
         
         res.json({
             success: true,
-            message: '密码修改成功'
+            stats: {
+                favorites_count: favoritesCount,
+                downloads_count: user.download_count || 0,
+                member_days: memberDays
+            }
         });
-
+        
     } catch (error) {
-        console.error('修改密码错误:', error);
+        console.error('获取用户统计错误:', error);
         res.status(500).json({ 
             success: false, 
-            message: '修改密码失败' 
+            message: '获取统计信息失败' 
         });
     }
-});
-
-// 调试API - 获取所有用户
-app.get('/api/debug/users', (req, res) => {
-    res.json({
-        success: true,
-        users: Array.from(users.values())
-    });
 });
 
 // 404处理
@@ -421,17 +559,17 @@ app.use((err, req, res, next) => {
 });
 
 // 启动服务器
-app.listen(PORT, () => {
-    console.log('='.repeat(60));
-    console.log('🚀 小说下载站服务器启动成功!');
-    console.log('📍 访问地址: http://localhost:' + PORT);
-    console.log('📁 服务目录: ' + __dirname);
-    console.log('⏰ 启动时间: ' + new Date().toLocaleString());
-    console.log('='.repeat(60));
-    console.log('测试账户信息:');
-    console.log('  👤 admin / admin123');
-    console.log('  👤 test / test123');
-    console.log('='.repeat(60));
-});
+async function startServer() {
+    await connectDB();
+    
+    app.listen(PORT, () => {
+        console.log('='.repeat(60));
+        console.log('🚀 小说下载站服务器启动成功!');
+        console.log('📍 访问地址: http://localhost:' + PORT);
+        console.log('🗄️  数据库: MongoDB Atlas');
+        console.log('⏰ 启动时间: ' + new Date().toLocaleString());
+        console.log('='.repeat(60));
+    });
+}
 
-console.log('✅ server.js 加载完成');
+startServer().catch(console.error);

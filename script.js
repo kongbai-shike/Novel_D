@@ -366,40 +366,77 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 检查是否已收藏
-    function checkIfFavorited(bookTitle) {
-        const favorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
-        return favorites.some(fav => fav.title === bookTitle);
+    async function checkIfFavorited(bookTitle) {
+        if (!currentUser) return false;
+        
+        try {
+            const response = await fetch(`/api/favorites/${currentUser.user_id}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                return data.favorites.some(fav => fav.novel_title === bookTitle);
+            }
+            return false;
+        } catch (error) {
+            console.error('检查收藏错误:', error);
+            return false;
+        }
     }
 
     // 切换收藏状态
-    function toggleFavorite(book, button) {
+    async function toggleFavorite(book, button) {
         if (!currentUser) {
             alert('请先登录后再收藏小说！');
             loginModal.style.display = 'flex';
             return;
         }
         
-        let favorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
-        const existingIndex = favorites.findIndex(fav => fav.title === book.title);
-        
-        if (existingIndex !== -1) {
-            // 取消收藏
-            favorites.splice(existingIndex, 1);
-            button.classList.remove('favorited');
-            button.textContent = '🤍';
-        } else {
-            // 添加收藏
-            favorites.push({
-                title: book.title,
-                author: book.author || '未知作者',
-                cover: book.cover || getDefaultCover(book.title),
-                addedAt: new Date().toISOString()
-            });
-            button.classList.add('favorited');
-            button.textContent = '❤️';
+        try {
+            const isFavorited = button.classList.contains('favorited');
+            
+            if (isFavorited) {
+                // 取消收藏
+                const response = await fetch('/api/favorites', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUser.user_id,
+                        novel_title: book.title
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    button.classList.remove('favorited');
+                    button.textContent = '🤍';
+                }
+            } else {
+                // 添加收藏
+                const response = await fetch('/api/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUser.user_id,
+                        novel_title: book.title,
+                        novel_author: book.author || '未知作者',
+                        novel_cover: book.cover || getDefaultCover(book.title)
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    button.classList.add('favorited');
+                    button.textContent = '❤️';
+                }
+            }
+        } catch (error) {
+            console.error('收藏操作错误:', error);
+            alert('操作失败，请稍后重试');
         }
-        
-        localStorage.setItem('userFavorites', JSON.stringify(favorites));
     }
 
     // 保存搜索历史到本地存储
